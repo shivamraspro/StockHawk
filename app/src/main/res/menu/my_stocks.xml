@@ -7,5 +7,4 @@
       android:icon="@drawable/ic_dollarpercent"
       android:orderInCategory="99"
       app:showAsAction="always"/>
-
 </menu>

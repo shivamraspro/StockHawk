@@ -6,7 +6,7 @@ package com.example.shivam.stockr.touch_helper;
  * Interface for enabling swiping to delete
  */
 public interface ItemTouchHelperViewHolder {
-  void onItemSelected();
+    void onItemSelected();
 
-  void onItemClear();
+    void onItemClear();
 }

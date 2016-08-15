@@ -6,8 +6,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,12 +24,15 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.shivam.stockr.R;
 import com.example.shivam.stockr.data.QuoteColumns;
 import com.example.shivam.stockr.data.QuoteProvider;
+import com.example.shivam.stockr.rest.Constants;
 import com.example.shivam.stockr.rest.QuoteCursorAdapter;
 import com.example.shivam.stockr.rest.RecyclerViewItemClickListener;
-import com.example.shivam.stockr.rest.Utils;
+import com.example.shivam.stockr.rest.Utility;
 import com.example.shivam.stockr.service.StockIntentService;
 import com.example.shivam.stockr.service.StockTaskService;
 import com.example.shivam.stockr.touch_helper.SimpleItemTouchHelperCallback;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
@@ -53,30 +55,31 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private Context mContext;
     private Cursor mCursor;
     boolean isConnected;
+    boolean hasPlayServices;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private final String LOG_TAG = MyStocksActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        ConnectivityManager cm =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
+        hasPlayServices = checkPlayServices();
+        isConnected = Utility.isNetworkAvailable(mContext);
         setContentView(R.layout.activity_my_stocks);
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
         mServiceIntent = new Intent(this, StockIntentService.class);
-        if (savedInstanceState == null) {
+
+        if (savedInstanceState == null && hasPlayServices) {
             // Run the initialize task service so that some stocks appear upon an empty database
-            mServiceIntent.putExtra("tag", "init");
+            mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
             if (isConnected) {
                 startService(mServiceIntent);
             } else {
                 networkToast();
             }
         }
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
@@ -88,6 +91,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     public void onItemClick(View v, int position) {
                         //TODO:
                         // do something on item click
+                        Toast.makeText(mContext, "Will Show More Details Soon", Toast.LENGTH_SHORT).show();
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);
@@ -98,7 +102,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isConnected) {
+                isConnected = Utility.isNetworkAvailable(mContext);
+                if (isConnected && hasPlayServices) {
                     new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
                             .content(R.string.content_test)
                             .inputType(InputType.TYPE_CLASS_TEXT)
@@ -119,8 +124,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                         return;
                                     } else {
                                         // Add the stock to DB
-                                        mServiceIntent.putExtra("tag", "add");
-                                        mServiceIntent.putExtra("symbol", input.toString());
+                                        mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_ADD);
+                                        mServiceIntent.putExtra(Constants.SYMBOL, input.toString());
                                         startService(mServiceIntent);
                                     }
                                 }
@@ -138,25 +143,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mItemTouchHelper.attachToRecyclerView(recyclerView);
 
         mTitle = getTitle();
-        if (isConnected) {
-            long period = 3600L;
-            long flex = 10L;
-            String periodicTag = "periodic";
 
-            // create a periodic task to pull stocks once every hour after the app has been opened. This
-            // is so Widget data stays up to date.
-            PeriodicTask periodicTask = new PeriodicTask.Builder()
-                    .setService(StockTaskService.class)
-                    .setPeriod(period)
-                    .setFlex(flex)
-                    .setTag(periodicTag)
-                    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
-                    .setRequiresCharging(false)
-                    .build();
-            // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
-            // are updated.
-            GcmNetworkManager.getInstance(this).schedule(periodicTask);
-        }
+        startPeriodicTask();
     }
 
 
@@ -164,6 +152,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public void onResume() {
         super.onResume();
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        isConnected = Utility.isNetworkAvailable(mContext);
+        if (!isConnected)
+            networkToast();
     }
 
     public void networkToast() {
@@ -198,7 +189,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
         if (id == R.id.action_change_units) {
             // this is for changing stock changes from percent value to dollar value
-            Utils.showPercent = !Utils.showPercent;
+            Utility.showPercent = !Utility.showPercent;
             this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
         }
 
@@ -227,4 +218,50 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter.swapCursor(null);
     }
 
+    /**
+     * This piece of code is copied from Advanced Android Development Course from Udacity
+     * <p>
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            //happens on main thread?
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void startPeriodicTask() {
+        if (isConnected && hasPlayServices) {
+            long period = 900L;
+            long flex = 10L;
+
+            // create a periodic task to pull stocks once every 15 minutes after the app has been opened. This
+            // is so Widget data stays up to date.
+            // The task will persist through system reboots
+            PeriodicTask periodicTask = new PeriodicTask.Builder()
+                    .setService(StockTaskService.class)
+                    .setPeriod(period)
+                    .setFlex(flex)
+                    .setTag(Constants.PERIODIC_TAG)
+                    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+                    .setPersisted(true)
+                    .setRequiresCharging(false)
+                    .build();
+            // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
+            // are updated.
+            GcmNetworkManager.getInstance(this).schedule(periodicTask);
+        }
+    }
 }
