@@ -29,7 +29,7 @@ public class StockIntentService extends IntentService {
 
         //The service was started to add a stock
         if (intent.getStringExtra(Constants.INSTANT_TAG).equals(Constants.TAG_ADD)) {
-            args.putString(Constants.SYMBOL, intent.getStringExtra(Constants.SYMBOL));
+            args.putString(Constants.QUOTE_SYMBOL, intent.getStringExtra(Constants.QUOTE_SYMBOL));
         }
         // We can call OnRunTask from the intent service to force it to run immediately instead of
         // scheduling a task.

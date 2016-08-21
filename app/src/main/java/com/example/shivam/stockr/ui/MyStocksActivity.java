@@ -27,10 +27,12 @@ import com.example.shivam.stockr.data.QuoteProvider;
 import com.example.shivam.stockr.rest.Constants;
 import com.example.shivam.stockr.rest.QuoteCursorAdapter;
 import com.example.shivam.stockr.rest.RecyclerViewItemClickListener;
+import com.example.shivam.stockr.rest.RecyclerViewItemDecorator;
 import com.example.shivam.stockr.rest.Utility;
 import com.example.shivam.stockr.service.StockIntentService;
 import com.example.shivam.stockr.service.StockTaskService;
 import com.example.shivam.stockr.touch_helper.SimpleItemTouchHelperCallback;
+import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -64,6 +66,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         super.onCreate(savedInstanceState);
         mContext = this;
         hasPlayServices = checkPlayServices();
+
+
         isConnected = Utility.isNetworkAvailable(mContext);
         setContentView(R.layout.activity_my_stocks);
         // The intent service is for executing immediate pulls from the Yahoo API
@@ -72,7 +76,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
         if (hasPlayServices) {
             // Run the initialize task service so that some stocks appear upon an empty database
-            // mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
+            mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
             if (isConnected) {
                 startService(mServiceIntent);
             } else {
@@ -82,9 +86,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
         mCursorAdapter = new QuoteCursorAdapter(this, null);
+        recyclerView.setAdapter(mCursorAdapter);
+
         recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override
@@ -94,8 +99,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         Toast.makeText(mContext, "Will Show More Details Soon", Toast.LENGTH_SHORT).show();
                     }
                 }));
-        recyclerView.setAdapter(mCursorAdapter);
 
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(recyclerView);
@@ -114,7 +119,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                     // in the DB and proceed accordingly
                                     Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
                                             new String[]{QuoteColumns.SYMBOL}, QuoteColumns.SYMBOL + "= ?",
-                                            new String[]{input.toString()}, null);
+                                            new String[]{input.toString().toUpperCase()}, null);
                                     if (c.getCount() != 0) {
                                         Toast toast =
                                                 Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
@@ -125,7 +130,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                     } else {
                                         // Add the stock to DB
                                         mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_ADD);
-                                        mServiceIntent.putExtra(Constants.SYMBOL, input.toString());
+                                        //stock symbol is always in upper case now
+                                        mServiceIntent.putExtra(Constants.QUOTE_SYMBOL, input.toString().toUpperCase());
                                         startService(mServiceIntent);
                                     }
                                 }
@@ -141,10 +147,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
+        recyclerView.addItemDecoration(new RecyclerViewItemDecorator(this, R.drawable.divider));
 
         mTitle = getTitle();
 
         startPeriodicTask();
+
+        setupStetho();
     }
 
 
@@ -171,6 +180,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my_stocks, menu);
+
+        menu.getItem(0).setIcon(R.drawable.ic_percent);
+
         restoreActionBar();
         return true;
     }
@@ -180,15 +192,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        if (id == R.id.action_change_units) {
+        if (item.getItemId() == R.id.action_change_units) {
             // this is for changing stock changes from percent value to dollar value
+            if (Utility.showPercent) {
+                item.setIcon(R.drawable.ic_dollar);
+            } else {
+                item.setIcon(R.drawable.ic_percent);
+            }
             Utility.showPercent = !Utility.showPercent;
             this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
         }
@@ -220,7 +230,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     /**
      * This piece of code is copied from Advanced Android Development Course from Udacity
-     * <p>
+     * <p/>
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
@@ -263,5 +273,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             // are updated.
             GcmNetworkManager.getInstance(this).schedule(periodicTask);
         }
+    }
+
+    private void setupStetho() {
+        Stetho.initialize(Stetho.newInitializerBuilder(this)
+                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                .build()
+        );
     }
 }

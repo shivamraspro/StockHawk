@@ -69,10 +69,10 @@ public class Utility {
         change = change.substring(1, change.length());
         double round = (double) Math.round(Double.parseDouble(change) * 100) / 100;
         change = String.format("%.2f", round);
-        StringBuffer changeBuffer = new StringBuffer(change);
-        changeBuffer.insert(0, weight);
-        changeBuffer.append(ampersand);
-        change = changeBuffer.toString();
+        StringBuilder changeBuilder = new StringBuilder(change);
+        changeBuilder.insert(0, weight);
+        changeBuilder.append(ampersand);
+        change = changeBuilder.toString();
         return change;
     }
 
@@ -80,11 +80,11 @@ public class Utility {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI);
         try {
-            String change = jsonObject.getString("Change");
-            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
-            builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
+            String change = jsonObject.getString(Constants.QUOTE_CHANGE);
+            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString(Constants.QUOTE_SYMBOL));
+            builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString(Constants.QUOTE_BID_PRICE)));
             builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
-                    jsonObject.getString("ChangeinPercent"), true));
+                    jsonObject.getString(Constants.QUOTE_PERCENT_CHANGE), true));
             builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
             builder.withValue(QuoteColumns.ISCURRENT, 1);
             if (change.charAt(0) == '-') {

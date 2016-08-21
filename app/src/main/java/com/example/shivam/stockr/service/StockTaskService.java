@@ -15,13 +15,14 @@ import com.example.shivam.stockr.rest.Utility;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by sam_chordas on 9/30/15.
@@ -41,15 +42,6 @@ public class StockTaskService extends GcmTaskService {
 
     public StockTaskService(Context context) {
         mContext = context;
-    }
-
-    String fetchData(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        Response response = client.newCall(request).execute();
-        return response.body().string();
     }
 
     @Override
@@ -83,14 +75,21 @@ public class StockTaskService extends GcmTaskService {
                     e.printStackTrace();
                 }
             } else if (initQueryCursor != null) {
+                //prints the contents of the cursor to System.out
                 DatabaseUtils.dumpCursor(initQueryCursor);
+
+                //This loop gets the name of all the quote symbols in the database
                 initQueryCursor.moveToFirst();
                 for (int i = 0; i < initQueryCursor.getCount(); i++) {
                     mStoredSymbols.append("\"" +
-                            initQueryCursor.getString(initQueryCursor.getColumnIndex(Constants.SYMBOL)) + "\",");
+                            initQueryCursor.getString(initQueryCursor.getColumnIndex(Constants.QUOTE_SYMBOL)) + "\",");
                     initQueryCursor.moveToNext();
                 }
+
+                //This removes the extra comma in the end and puts closing bracket
                 mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
+
+                //It appends all the symbols in the url in encoded form
                 try {
                     urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), Constants.CHAR_SET_NAME));
                 } catch (UnsupportedEncodingException e) {
@@ -100,7 +99,7 @@ public class StockTaskService extends GcmTaskService {
         } else if (params.getTag().equals(Constants.TAG_ADD)) {
             isUpdate = false;
             // get symbol from params.getExtra and build query
-            String stockInput = params.getExtras().getString(Constants.SYMBOL);
+            String stockInput = params.getExtras().getString(Constants.QUOTE_SYMBOL);
             try {
                 urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", Constants.CHAR_SET_NAME));
             } catch (UnsupportedEncodingException e) {
@@ -121,15 +120,17 @@ public class StockTaskService extends GcmTaskService {
                 getResponse = fetchData(urlString);
                 result = GcmNetworkManager.RESULT_SUCCESS;
                 try {
-                    ContentValues contentValues = new ContentValues();
                     // update ISCURRENT to 0 (false) so new data is current
                     if (isUpdate) {
+                        //this puts the ISCURRENT to 0 for all rows of table
+                        ContentValues contentValues = new ContentValues();
                         contentValues.put(QuoteColumns.ISCURRENT, 0);
                         mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
                                 null, null);
                     }
-                    mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                            Utility.quoteJsonToContentVals(getResponse));
+                        mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                                Utility.quoteJsonToContentVals(getResponse));
+
                 } catch (RemoteException | OperationApplicationException e) {
                     Log.e(LOG_TAG, "Error applying batch insert", e);
                 }
@@ -139,6 +140,16 @@ public class StockTaskService extends GcmTaskService {
         }
 
         return result;
+    }
+
+
+    String fetchData(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 
 }
