@@ -1,25 +1,37 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme"
-        parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/stockr_blue_800</item>
         <item name="colorPrimaryDark">@color/stockr_blue_900</item>
+        <item name="toolbarStyle">@style/Toolbar</item>
+        <item name="colorAccent">@color/stockr_blue_800</item>
         <!-- Customize your theme here. -->
     </style>
 
+    <!--My Stocks Activity toolbar style-->
+    <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/stockr_blue_800</item>
+        <item name="popupTheme">@style/Theme.AppCompat.Light.DarkActionBar</item>
+        <item name="titleTextColor">@color/stockr_white</item>
+        <item name="elevation">@dimen/appbar_elevation</item>
+    </style>
 
     <style name="PercentChangeTextStyle">
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">#FFF</item>
+        <item name="android:textColor">@color/stockr_white</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="BidPriceTextStyle">
         <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/stockr_grey_800</item>
     </style>
+
     <style name="StockSymbolTextStyle">
         <item name="android:textSize">25sp</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/stockr_grey_800</item>
     </style>
 
 </resources>

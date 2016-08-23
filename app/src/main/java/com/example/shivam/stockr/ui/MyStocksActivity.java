@@ -7,10 +7,11 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.util.Log;
@@ -46,10 +47,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
     private static final int CURSOR_LOADER_ID = 0;
@@ -60,6 +57,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     boolean hasPlayServices;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String LOG_TAG = MyStocksActivity.class.getSimpleName();
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private boolean loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,14 +69,37 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
         isConnected = Utility.isNetworkAvailable(mContext);
         setContentView(R.layout.activity_my_stocks);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getString(R.string.app_name));
+
+        swipeRefreshLayout = (SwipeRefreshLayout) this.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.stockr_blue_800);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (isConnected) {
+                    // Run the initialize task service so that some stocks appear upon an empty database
+                    loading = true;
+                    swipeRefreshLayout.setRefreshing(loading);
+                    mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
+                    startService(mServiceIntent);
+                } else {
+                    networkToast();
+                }
+            }
+        });
+
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
         mServiceIntent = new Intent(this, StockIntentService.class);
 
         if (hasPlayServices) {
-            // Run the initialize task service so that some stocks appear upon an empty database
-            mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
             if (isConnected) {
+                // Run the initialize task service so that some stocks appear upon an empty database
+                loading = false;
+                mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
                 startService(mServiceIntent);
             } else {
                 networkToast();
@@ -149,8 +171,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mItemTouchHelper.attachToRecyclerView(recyclerView);
         recyclerView.addItemDecoration(new RecyclerViewItemDecorator(this, R.drawable.divider));
 
-        mTitle = getTitle();
-
         startPeriodicTask();
 
         setupStetho();
@@ -170,20 +190,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
     }
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my_stocks, menu);
 
         menu.getItem(0).setIcon(R.drawable.ic_percent);
 
-        restoreActionBar();
+        //restoreActionBar();
         return true;
     }
 
@@ -221,6 +234,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
         mCursor = data;
+        if(loading) {
+            loading = false;
+            swipeRefreshLayout.setRefreshing(loading);
+        }
     }
 
     @Override
