@@ -32,7 +32,8 @@ public class QuoteProvider {
     public static class Quotes {
         @ContentUri(
                 path = Path.QUOTES,
-                type = "vnd.android.cursor.dir/quote"
+                type = "vnd.android.cursor.dir/quote",
+                defaultSort = QuoteColumns._ID + " desc"
         )
         public static final Uri CONTENT_URI = buildUri(Path.QUOTES);
 

@@ -41,6 +41,10 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -58,7 +62,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String LOG_TAG = MyStocksActivity.class.getSimpleName();
     private SwipeRefreshLayout swipeRefreshLayout;
-    private boolean loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,15 +82,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (isConnected) {
-                    // Run the initialize task service so that some stocks appear upon an empty database
-                    loading = true;
-                    swipeRefreshLayout.setRefreshing(loading);
-                    mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
-                    startService(mServiceIntent);
-                } else {
-                    networkToast();
-                }
+                refreshStocksList();
             }
         });
 
@@ -98,7 +93,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         if (hasPlayServices) {
             if (isConnected) {
                 // Run the initialize task service so that some stocks appear upon an empty database
-                loading = false;
                 mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
                 startService(mServiceIntent);
             } else {
@@ -186,6 +180,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             networkToast();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
     public void networkToast() {
         Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
     }
@@ -194,7 +200,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my_stocks, menu);
 
-        menu.getItem(0).setIcon(R.drawable.ic_percent);
+        //menu.getItem(0).setIcon(R.drawable.ic_percent);
 
         //restoreActionBar();
         return true;
@@ -205,7 +211,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        if (item.getItemId() == R.id.action_change_units) {
+        int id = item.getItemId();
+        if (id == R.id.action_change_units) {
             // this is for changing stock changes from percent value to dollar value
             if (Utility.showPercent) {
                 item.setIcon(R.drawable.ic_dollar);
@@ -214,6 +221,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             }
             Utility.showPercent = !Utility.showPercent;
             this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
+        } else if (id == R.id.action_refresh) {
+            refreshStocksList();
         }
 
         return super.onOptionsItemSelected(item);
@@ -234,10 +243,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
         mCursor = data;
-        if(loading) {
-            loading = false;
-            swipeRefreshLayout.setRefreshing(loading);
-        }
+        EventBus.getDefault().post(new LoadingEvent(false));
     }
 
     @Override
@@ -297,5 +303,31 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                 .build()
         );
+    }
+
+    public class LoadingEvent {
+        public final boolean loading;
+
+        LoadingEvent(boolean loading) {
+            this.loading = loading;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void stopLoading(LoadingEvent loadingEvent) {
+        swipeRefreshLayout.setRefreshing(loadingEvent.loading);
+    }
+
+    private void refreshStocksList() {
+        isConnected = Utility.isNetworkAvailable(mContext);
+        if (isConnected) {
+            // Run the initialize task service so that some stocks appear upon an empty database
+            swipeRefreshLayout.setRefreshing(true);
+            mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
+            startService(mServiceIntent);
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+            networkToast();
+        }
     }
 }
