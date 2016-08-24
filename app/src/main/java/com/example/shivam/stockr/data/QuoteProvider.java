@@ -18,6 +18,7 @@ public class QuoteProvider {
 
     interface Path {
         String QUOTES = "quotes";
+        String QUOTES_ISNOTCURRENT = "quotes_isnotcurrent";
     }
 
     private static Uri buildUri(String... paths) {
@@ -32,13 +33,12 @@ public class QuoteProvider {
     public static class Quotes {
         @ContentUri(
                 path = Path.QUOTES,
-                type = "vnd.android.cursor.dir/quote",
-                defaultSort = QuoteColumns._ID + " desc"
+                type = "vnd.android.cursor.dir/quote"
         )
         public static final Uri CONTENT_URI = buildUri(Path.QUOTES);
 
         @InexactContentUri(
-                name = "QUOTE_ID",
+                name = "QUOTE_SYMBOL",
                 path = Path.QUOTES + "/*",
                 type = "vnd.android.cursor.item/quote",
                 whereColumn = QuoteColumns.SYMBOL,
@@ -47,5 +47,12 @@ public class QuoteProvider {
         public static Uri withSymbol(String symbol) {
             return buildUri(Path.QUOTES, symbol);
         }
+
+        @ContentUri(
+                path = Path.QUOTES_ISNOTCURRENT,
+                type = "vnd.android.cursor.dir/quote",
+                where = QuoteColumns.ISCURRENT + " == 0"
+        )
+        public static final Uri CONTENT_URI_ISNOTCURRENT = buildUri(Path.QUOTES_ISNOTCURRENT);
     }
 }

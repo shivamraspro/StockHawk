@@ -236,7 +236,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
                 QuoteColumns.ISCURRENT + " = ?",
                 new String[]{"1"},
-                null);
+                QuoteColumns._ID + " desc");
     }
 
     @Override
