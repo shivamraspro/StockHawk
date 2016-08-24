@@ -17,19 +17,17 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public boolean isItemViewSwipeEnabled() {
-        return true;
-    }
-
-    @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        final int dragFlags = 0;
+        final int dragFlags =  ItemTouchHelper.UP | ItemTouchHelper.DOWN;
         final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
 
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder sourceViewHolder, RecyclerView.ViewHolder targetViewHolder) {
+        mAdapter.onItemMove(sourceViewHolder.getAdapterPosition(),
+                targetViewHolder.getAdapterPosition());
+
         return true;
     }
 
@@ -55,5 +53,15 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
         ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
         itemViewHolder.onItemClear();
+    }
+
+    @Override
+    public boolean isLongPressDragEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isItemViewSwipeEnabled() {
+        return true;
     }
 }

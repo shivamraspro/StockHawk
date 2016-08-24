@@ -52,7 +52,6 @@ public class Utility {
             Log.e(LOG_TAG, "String to JSON failed: " + e);
         }
 
-
         //This will delete all the old quotes data from database
         ContentProviderOperation.Builder builder = ContentProviderOperation.newDelete(
                 QuoteProvider.Quotes.CONTENT_URI_ISNOTCURRENT);
