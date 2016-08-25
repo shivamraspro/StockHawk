@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/stockr_blue_800"
+    android:columnCount="2"
+    android:paddingLeft="32dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingRight="32dp"
+    android:rowCount="4">
+
+    <TextView
+        android:id="@+id/stock_name"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnSpan="2"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill"
+        android:layout_row="0"
+        android:textStyle="bold"
+        android:layout_rowWeight="1"
+        android:gravity="center"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/stockr_white"
+        tools:text="Yahoo" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnWeight="2"
+        android:layout_gravity="fill"
+        android:layout_row="1"
+        android:layout_rowWeight="1"
+        android:gravity="center_vertical"
+        android:text="@string/details_current_price_label"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/accent_light_blue_100" />
+
+    <TextView
+        android:id="@+id/stock_price"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill"
+        android:layout_row="1"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/stockr_grey_300"
+        tools:text="$50" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnWeight="2"
+        android:layout_gravity="fill"
+        android:layout_row="2"
+        android:layout_rowWeight="1"
+        android:gravity="center_vertical"
+        android:text="@string/details_year_low_label"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/accent_light_blue_100" />
+
+    <TextView
+        android:id="@+id/stock_year_low"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill"
+        android:layout_row="2"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/stockr_grey_300"
+        tools:text="$30" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnWeight="2"
+        android:layout_gravity="fill"
+        android:layout_row="3"
+        android:layout_rowWeight="1"
+        android:gravity="center_vertical"
+        android:text="@string/details_year_high_label"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/accent_light_blue_100" />
+
+    <TextView
+        android:id="@+id/stock_year_high"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill"
+        android:layout_row="3"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/stockr_grey_300"
+        tools:text="$60" />
+
+
+</GridLayout>

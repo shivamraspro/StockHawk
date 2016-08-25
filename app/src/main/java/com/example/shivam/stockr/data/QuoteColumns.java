@@ -30,9 +30,6 @@ public class QuoteColumns {
     @NotNull
     public static final String BIDPRICE = "bid_price";
 
-//    @DataType(DataType.Type.TEXT)
-//    public static final String CREATED = "created";
-
     @DataType(DataType.Type.INTEGER)
     @NotNull
     public static final String ISUP = "is_up";
@@ -40,4 +37,17 @@ public class QuoteColumns {
     @DataType(DataType.Type.INTEGER)
     @NotNull
     public static final String ISCURRENT = "is_current";
+
+    @DataType(DataType.Type.TEXT)
+    @NotNull
+    public static final String NAME = "name";
+
+    @DataType(DataType.Type.TEXT)
+    @NotNull
+    public static final String YEARLOW = "year_low";
+
+    @DataType(DataType.Type.TEXT)
+    @NotNull
+    public static final String YEARHIGH = "year_high";
+
 }

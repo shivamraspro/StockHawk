@@ -18,4 +18,8 @@ public class Constants {
     public final static String QUOTE_PERCENT_CHANGE = "ChangeinPercent";
     public final static String QUOTE_CHANGE = "Change";
     public final static String QUOTE_BID_PRICE = "Bid";
+    public final static String QUOTE_NAME = "Name";
+    public final static String QUOTE_YEARLOW = "YearLow";
+    public final static String QUOTE_YEARHIGH = "YearHigh";
+
 }

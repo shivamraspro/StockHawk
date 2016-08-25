@@ -20,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.shivam.stockr.R;
 import com.example.shivam.stockr.data.QuoteColumns;
@@ -45,7 +44,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -60,7 +59,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     boolean isConnected;
     boolean hasPlayServices;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private final String LOG_TAG = MyStocksActivity.class.getSimpleName();
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
     private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -71,9 +70,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
 
         isConnected = Utility.isNetworkAvailable(mContext);
-        setContentView(R.layout.activity_my_stocks);
+        setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getString(R.string.app_name));
 
@@ -100,21 +99,38 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             }
         }
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mCursorAdapter = new QuoteCursorAdapter(this, null);
         recyclerView.setAdapter(mCursorAdapter);
 
+        final Intent intent = new Intent(this, DetailsActivity.class);
+
         recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, int position) {
-                        //TODO:
-                        // do something on item click
-                        Toast.makeText(mContext, "Will Show More Details Soon", Toast.LENGTH_SHORT).show();
+
+                        Cursor cursor = getContentResolver().query(
+                                QuoteProvider.Quotes.CONTENT_URI,
+                                null,
+                                null,
+                                null,
+                                QuoteColumns._ID + " desc");
+
+                        if(cursor != null && cursor.moveToPosition(position)) {
+                            intent.putExtra(QuoteColumns.SYMBOL, cursor.getString(cursor.getColumnIndex(QuoteColumns.SYMBOL)));
+                            intent.putExtra(QuoteColumns.NAME, cursor.getString(cursor.getColumnIndex(QuoteColumns.NAME)));
+                            intent.putExtra(QuoteColumns.BIDPRICE, cursor.getString(cursor.getColumnIndex(QuoteColumns.BIDPRICE)));
+                            intent.putExtra(QuoteColumns.YEARLOW, cursor.getString(cursor.getColumnIndex(QuoteColumns.YEARLOW)));
+                            intent.putExtra(QuoteColumns.YEARHIGH, cursor.getString(cursor.getColumnIndex(QuoteColumns.YEARHIGH)));
+                            startActivity(intent);
+                        }
                     }
                 }));
+
+
 
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
@@ -138,7 +154,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                             new String[]{input.toString().toUpperCase()}, null);
                                     if (c.getCount() != 0) {
                                         Toast toast =
-                                                Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                                                Toast.makeText(MainActivity.this, "This stock is already saved!",
                                                         Toast.LENGTH_LONG);
                                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                                         toast.show();
@@ -198,7 +214,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.my_stocks, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         //menu.getItem(0).setIcon(R.drawable.ic_percent);
 

@@ -92,6 +92,9 @@ public class Utility {
             builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
                     jsonObject.getString(Constants.QUOTE_PERCENT_CHANGE), true));
             builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
+            builder.withValue(QuoteColumns.NAME,jsonObject.getString(Constants.QUOTE_NAME));
+            builder.withValue(QuoteColumns.YEARHIGH,jsonObject.getString(Constants.QUOTE_YEARHIGH));
+            builder.withValue(QuoteColumns.YEARLOW,jsonObject.getString(Constants.QUOTE_YEARLOW));
             builder.withValue(QuoteColumns.ISCURRENT, 1);
             if (change.charAt(0) == '-') {
                 builder.withValue(QuoteColumns.ISUP, 0);
