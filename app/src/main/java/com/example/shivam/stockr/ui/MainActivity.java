@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void startPeriodicTask() {
         if (isConnected && hasPlayServices) {
-            long period = 900L;
+            long period = 1800L;
             long flex = 10L;
 
             // create a periodic task to pull stocks once every 15 minutes after the app has been opened. This

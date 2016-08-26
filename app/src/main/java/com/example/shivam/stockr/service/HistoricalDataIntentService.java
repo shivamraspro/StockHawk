@@ -46,7 +46,7 @@ public class HistoricalDataIntentService extends IntentService {
         StringBuilder urlStringBuilder = new StringBuilder();
         try {
             String endDate = Utility.getTodayDate();
-            String startDate = Utility.getLastYearDate(endDate);
+            String startDate = Utility.getLastYearDate();
 
             urlStringBuilder.append(Constants.BASE_URL);
             urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.historicaldata where symbol = ", Constants.CHAR_SET_NAME));

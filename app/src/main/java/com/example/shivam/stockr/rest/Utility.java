@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.StringTokenizer;
@@ -95,9 +94,9 @@ public class Utility {
             builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
                     jsonObject.getString(Constants.QUOTE_PERCENT_CHANGE), true));
             builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
-            builder.withValue(QuoteColumns.NAME,jsonObject.getString(Constants.QUOTE_NAME));
-            builder.withValue(QuoteColumns.YEARHIGH,jsonObject.getString(Constants.QUOTE_YEARHIGH));
-            builder.withValue(QuoteColumns.YEARLOW,jsonObject.getString(Constants.QUOTE_YEARLOW));
+            builder.withValue(QuoteColumns.NAME, jsonObject.getString(Constants.QUOTE_NAME));
+            builder.withValue(QuoteColumns.YEARHIGH, jsonObject.getString(Constants.QUOTE_YEARHIGH));
+            builder.withValue(QuoteColumns.YEARLOW, jsonObject.getString(Constants.QUOTE_YEARLOW));
             builder.withValue(QuoteColumns.ISCURRENT, 1);
             if (change.charAt(0) == '-') {
                 builder.withValue(QuoteColumns.ISUP, 0);
@@ -119,33 +118,63 @@ public class Utility {
 
     public static String getTodayDate() {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        return df.format(c.getTime());
+
+        StringBuilder todayDate = new StringBuilder();
+
+        int YEAR = c.get(Calendar.YEAR);
+        int MONTH = c.get(Calendar.MONTH) + 1;
+        int DATE = c.get(Calendar.DATE);
+
+        todayDate.append(YEAR).append("-");
+
+        if (MONTH < 10)
+            todayDate.append("0");
+
+        todayDate.append(MONTH).append("-");
+
+        if (DATE < 10)
+            todayDate.append("0");
+
+        todayDate.append(DATE);
+
+        return todayDate.toString();
     }
 
-    public static String getLastYearDate(String td) {
-        StringTokenizer todayDate = new StringTokenizer(td, "-");
+    public static String getLastYearDate() {
+        Calendar c = Calendar.getInstance();
 
-        StringBuilder lastYearDate = new StringBuilder();
+        int YEAR = c.get(Calendar.YEAR);
+        int MONTH = c.get(Calendar.MONTH) + 1;
+        int DATE = c.get(Calendar.DATE);
 
-        if(!checkSpecialDate(td)) {
-            Integer year = new Integer(todayDate.nextToken());
-            lastYearDate.append(year-1)
-                    .append("-")
-                    .append(todayDate.nextToken())
-                    .append("-")
-                    .append(todayDate.nextToken());
+        StringBuilder todayDate = new StringBuilder();
+        if (!(MONTH == 2 && DATE == 29)) {
+            todayDate.append(YEAR - 1).append("-");
+
+            if (MONTH < 10)
+                todayDate.append("0");
+
+            todayDate.append(MONTH).append("-");
+
+            if (DATE < 10)
+                todayDate.append("0");
+
+            todayDate.append(DATE);
+        } else {
+            todayDate.append(YEAR - 1).append("-");
+
+            if (MONTH < 10)
+                todayDate.append("0");
+
+            todayDate.append(MONTH).append("-");
+
+            if (DATE < 10)
+                todayDate.append("0");
+
+            todayDate.append(DATE - 1);
         }
-        else {
-            Integer year = new Integer(todayDate.nextToken());
-            lastYearDate.append(year-1)
-                    .append("-")
-                    .append(todayDate.nextToken())
-                    .append("-")
-                    .append("28");
-        }
 
-        return lastYearDate.toString();
+        return todayDate.toString();
     }
 
     private static boolean checkSpecialDate(String td) {
@@ -153,8 +182,8 @@ public class Utility {
         stk.nextToken();
         String month = stk.nextToken();
         String day = stk.nextToken();
-        if(month.equals("02") && day.equals("29")) {
-            return  true;
+        if (month.equals("02") && day.equals("29")) {
+            return true;
         }
         return false;
     }
@@ -172,8 +201,8 @@ public class Utility {
                 jsonObject = jsonObject.getJSONObject("query").getJSONObject("results");
                 jsonArray = jsonObject.getJSONArray("quote");
 
-                if(jsonArray != null && jsonArray.length() != 0) {
-                    for(int i = jsonArray.length() - 1; i >= 0; i--) {
+                if (jsonArray != null && jsonArray.length() != 0) {
+                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
                         historicalData.add(jsonArray.getJSONObject(i).getDouble(Constants.QUOTE_DAY_CLOSING_PRICE));
                     }
                 }
