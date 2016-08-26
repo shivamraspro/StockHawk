@@ -45,7 +45,7 @@
             </intent-filter>
         </service>
         <service android:name=".service.StockIntentService" />
-        \
+        <service android:name=".service.HistoricalDataIntentService" />
         <provider
             android:name=".data.generated.QuoteProvider"
             android:authorities="com.example.shivam.stockr.data.QuoteProvider"

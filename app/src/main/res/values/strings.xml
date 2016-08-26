@@ -16,4 +16,5 @@
     <string name="details_current_price_label">Current Price</string>
     <string name="details_year_low_label">Year Low</string>
     <string name="details_year_high_label">Year High</string>
+    <string name="loading_graph_message">Loading...</string>
 </resources>

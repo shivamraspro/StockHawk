@@ -13,7 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.StringTokenizer;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -112,5 +115,74 @@ public class Utility {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public static String getTodayDate() {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        return df.format(c.getTime());
+    }
+
+    public static String getLastYearDate(String td) {
+        StringTokenizer todayDate = new StringTokenizer(td, "-");
+
+        StringBuilder lastYearDate = new StringBuilder();
+
+        if(!checkSpecialDate(td)) {
+            Integer year = new Integer(todayDate.nextToken());
+            lastYearDate.append(year-1)
+                    .append("-")
+                    .append(todayDate.nextToken())
+                    .append("-")
+                    .append(todayDate.nextToken());
+        }
+        else {
+            Integer year = new Integer(todayDate.nextToken());
+            lastYearDate.append(year-1)
+                    .append("-")
+                    .append(todayDate.nextToken())
+                    .append("-")
+                    .append("28");
+        }
+
+        return lastYearDate.toString();
+    }
+
+    private static boolean checkSpecialDate(String td) {
+        StringTokenizer stk = new StringTokenizer(td, "-");
+        stk.nextToken();
+        String month = stk.nextToken();
+        String day = stk.nextToken();
+        if(month.equals("02") && day.equals("29")) {
+            return  true;
+        }
+        return false;
+    }
+
+    public static ArrayList<Double> getHistoricalData(String JSON) {
+
+        ArrayList<Double> historicalData = new ArrayList<>();
+
+        JSONObject jsonObject = null;
+        JSONArray jsonArray = null;
+
+        try {
+            jsonObject = new JSONObject(JSON);
+            if (jsonObject != null && jsonObject.length() != 0) {
+                jsonObject = jsonObject.getJSONObject("query").getJSONObject("results");
+                jsonArray = jsonObject.getJSONArray("quote");
+
+                if(jsonArray != null && jsonArray.length() != 0) {
+                    for(int i = jsonArray.length() - 1; i >= 0; i--) {
+                        historicalData.add(jsonArray.getJSONObject(i).getDouble(Constants.QUOTE_DAY_CLOSING_PRICE));
+                    }
+                }
+
+            }
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "String to JSON to Arraylist failed: " + e);
+        }
+
+        return historicalData;
     }
 }

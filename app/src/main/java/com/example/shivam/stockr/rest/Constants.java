@@ -22,4 +22,5 @@ public class Constants {
     public final static String QUOTE_YEARLOW = "YearLow";
     public final static String QUOTE_YEARHIGH = "YearHigh";
 
+    public final static String QUOTE_DAY_CLOSING_PRICE = "Close";
 }

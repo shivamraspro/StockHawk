@@ -22,14 +22,30 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <TextView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="6"
-        android:background="@color/stockr_grey_200"/>
+        android:id="@+id/graph_container"
+        android:layout_weight="3"
+        android:background="@color/stockr_grey_200" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/loading_view"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_graph_message"
+            android:layout_gravity="center"
+            android:textColor="@color/stockr_grey_800"
+            android:textAppearance="?android:textAppearanceLarge"
+            />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/graph"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
    <include layout="@layout/stock_details"
-       android:layout_weight="4"
+       android:layout_weight="2"
        android:layout_height="0dp"
        android:layout_width="match_parent" />
 
