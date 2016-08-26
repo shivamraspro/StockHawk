@@ -1,11 +1,11 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/recycler_view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/stockr_grey_200"
-    android:orientation="vertical">
-
+    android:fitsSystemWindows="true"
+    android:background="@color/stockr_grey_200">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar_main"
@@ -15,43 +15,38 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
-            android:elevation="@dimen/appbar_elevation"
             android:layout_height="?attr/actionBarSize"
+            android:elevation="@dimen/appbar_elevation"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-
-            android:id="@+id/swipe_refresh_layout"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_white_24dp"
+        fab:fab_colorNormal="@color/stockr_blue_800"
+        fab:fab_colorPressed="@color/stockr_blue_900"
+        fab:fab_colorRipple="@color/stockr_blue_900"
+        fab:fab_shadow="true"
+        fab:fab_type="normal" />
 
-        <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_add_white_24dp"
-            fab:fab_colorNormal="@color/stockr_blue_800"
-            fab:fab_colorPressed="@color/stockr_blue_900"
-            fab:fab_colorRipple="@color/stockr_blue_900"
-            fab:fab_shadow="true"
-            fab:fab_type="normal" />
-    </FrameLayout>
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

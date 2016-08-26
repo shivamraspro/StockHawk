@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,11 +46,17 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
+
+    @BindView(R.id.recycler_view_container)
+    CoordinatorLayout recyclerViewContainer;
 
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
@@ -71,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         isConnected = Utility.isNetworkAvailable(mContext);
         setContentView(R.layout.activity_main);
+
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -95,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mServiceIntent.putExtra(Constants.INSTANT_TAG, Constants.TAG_INIT);
                 startService(mServiceIntent);
             } else {
-                networkToast();
+                networkSnackBar();
             }
         }
 
@@ -170,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             })
                             .show();
                 } else {
-                    networkToast();
+                    networkSnackBar();
                 }
 
             }
@@ -193,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
         isConnected = Utility.isNetworkAvailable(mContext);
         if (!isConnected)
-            networkToast();
+            networkSnackBar();
     }
 
     @Override
@@ -208,17 +218,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onStop();
     }
 
-    public void networkToast() {
-        Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+    public void networkSnackBar() {
+      //  Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+        Snackbar snackbar = Snackbar
+                .make(recyclerViewContainer, getString(R.string.no_internet_message), Snackbar.LENGTH_INDEFINITE);
+        snackbar.show();
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-
-        //menu.getItem(0).setIcon(R.drawable.ic_percent);
-
-        //restoreActionBar();
         return true;
     }
 
@@ -343,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             startService(mServiceIntent);
         } else {
             swipeRefreshLayout.setRefreshing(false);
-            networkToast();
+            networkSnackBar();
         }
     }
 }

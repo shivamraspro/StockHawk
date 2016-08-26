@@ -37,7 +37,7 @@
         android:gravity="center_vertical"
         android:text="@string/details_current_price_label"
         android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="@color/accent_light_blue_100" />
+        android:textColor="@color/stockr_accent_light_blue_100" />
 
     <TextView
         android:id="@+id/stock_price"
@@ -61,7 +61,7 @@
         android:gravity="center_vertical"
         android:text="@string/details_year_low_label"
         android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="@color/accent_light_blue_100" />
+        android:textColor="@color/stockr_accent_light_blue_100" />
 
     <TextView
         android:id="@+id/stock_year_low"
@@ -85,7 +85,7 @@
         android:gravity="center_vertical"
         android:text="@string/details_year_high_label"
         android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="@color/accent_light_blue_100" />
+        android:textColor="@color/stockr_accent_light_blue_100" />
 
     <TextView
         android:id="@+id/stock_year_high"

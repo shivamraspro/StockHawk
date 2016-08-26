@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.shivam.stockr.R;
 import com.example.shivam.stockr.data.QuoteColumns;
@@ -43,11 +45,14 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.graph_container)
     FrameLayout graphContainer;
 
-    @BindView(R.id.loading_view)
-    TextView tv_loading;
+    @BindView(R.id.loading_spinner)
+    ProgressBar loading_spinner;
 
     @BindView(R.id.graph)
     LineChart graph;
+
+    @BindView(R.id.no_internet_view)
+    LinearLayout noInternetView;
 
     private Intent historicalDataIntentService;
 
@@ -65,7 +70,10 @@ public class DetailsActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        graphContainer.removeView(graph);
+//        loading_spinner.setVisibility(View.GONE);
+//        graph.setVisibility(View.GONE);
+//        noInternetView.setVisibility(View.GONE);
+
 
         Intent intent = getIntent();
 
@@ -74,15 +82,12 @@ public class DetailsActivity extends AppCompatActivity {
         tv_stockYearLow.setText("$" + intent.getStringExtra(QuoteColumns.YEARLOW));
         tv_stockYearHigh.setText("$" + intent.getStringExtra(QuoteColumns.YEARHIGH));
 
-        String stockSymbol = intent.getStringExtra(QuoteColumns.SYMBOL);
 
         if(Utility.isNetworkAvailable(this)) {
-            historicalDataIntentService = new Intent(this, HistoricalDataIntentService.class);
-            historicalDataIntentService.putExtra(QuoteColumns.SYMBOL, stockSymbol);
-            startService(historicalDataIntentService);
+            startLoadingGraph();
         }
         else {
-            Toast.makeText(this, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+            noInternetView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -116,14 +121,29 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         LineDataSet dataSet = new LineDataSet(entries, "Label");
-        dataSet.setColor(R.color.accent_light_blue_100);
+        dataSet.setColor(R.color.stockr_accent_light_blue_100);
 
         LineData data = new LineData(dataSet);
         graph.setData(data);
         graph.invalidate();
 
-        graphContainer.removeView(tv_loading);
-        graphContainer.addView(graph);
+        loading_spinner.setVisibility(View.GONE);
+        graph.setVisibility(View.VISIBLE);
+    }
+
+    public void retryLoadingGraph(View view) {
+        if(Utility.isNetworkAvailable(this)) {
+
+            noInternetView.setVisibility(View.GONE);
+            startLoadingGraph();
+        }
+    }
+
+    private void startLoadingGraph() {
+        loading_spinner.setVisibility(View.VISIBLE);
+        historicalDataIntentService = new Intent(this, HistoricalDataIntentService.class);
+        historicalDataIntentService.putExtra(QuoteColumns.SYMBOL, getIntent().getStringExtra(QuoteColumns.SYMBOL));
+        startService(historicalDataIntentService);
     }
 
 

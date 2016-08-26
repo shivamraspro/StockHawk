@@ -3,7 +3,7 @@
     <color name="stockr_blue_800">#1565C0</color>
     <color name="stockr_blue_900">#0D47A1</color>
 
-    <color name="accent_light_blue_100">#80D8FF</color>
+    <color name="stockr_accent_light_blue_100">#80D8FF</color>
 
     <color name="stockr_red_700">#D50000</color>
     <color name="stockr_green_700">#00C853</color>
@@ -13,4 +13,6 @@
     <color name="stockr_white">#FFFFFF</color>
     <color name="stockr_grey_800">#424242</color>
     <color name="stockr_grey_200">#EEEEEE</color>
+    <color name="stockr_grey_500">#9E9E9E</color>
+
 </resources>
