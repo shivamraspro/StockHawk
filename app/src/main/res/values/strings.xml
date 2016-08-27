@@ -18,4 +18,5 @@
     <string name="details_year_high_label">Year High</string>
     <string name="loading_graph_message">Loading...</string>
     <string name="no_internet_message">No Internet Connection</string>
+    <string name="open_settings_label">Settings</string>
 </resources>

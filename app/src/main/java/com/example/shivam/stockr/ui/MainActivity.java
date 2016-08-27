@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 if (isConnected && hasPlayServices) {
                     new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
                             .content(R.string.content_test)
-                            .inputType(InputType.TYPE_CLASS_TEXT)
+                            .inputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
                             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(MaterialDialog dialog, CharSequence input) {
@@ -219,11 +219,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void networkSnackBar() {
-      //  Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
         Snackbar snackbar = Snackbar
-                .make(recyclerViewContainer, getString(R.string.no_internet_message), Snackbar.LENGTH_INDEFINITE);
-        snackbar.show();
+                .make(recyclerViewContainer, getString(R.string.no_internet_message), Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.open_settings_label), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
 
+                    }
+                });
+        snackbar.show();
     }
 
     @Override
