@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.shivam.stockr.R;
 import com.example.shivam.stockr.data.QuoteColumns;
@@ -58,6 +59,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.recycler_view_container)
     CoordinatorLayout recyclerViewContainer;
 
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+
+    @BindView(R.id.toolbar_main)
+    Toolbar toolbar;
+
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
+
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
     private static final int CURSOR_LOADER_ID = 0;
@@ -68,7 +81,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     boolean hasPlayServices;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String LOG_TAG = MainActivity.class.getSimpleName();
-    private SwipeRefreshLayout swipeRefreshLayout;
+
+    private final static String[] QUOTE_DETAILS_COLUMNS = {
+        QuoteColumns.SYMBOL,
+        QuoteColumns.NAME,
+        QuoteColumns.BIDPRICE,
+        QuoteColumns.YEARLOW,
+        QuoteColumns.YEARHIGH
+    };
+
+    private static final int INDEX_SYMBOL = 0;
+    private static final int INDEX_NAME = 1;
+    private static final int INDEX_BIDPRICE = 2;
+    private static final int INDEX_YEARLOW = 3;
+    private static final int INDEX_YEARHIGH = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +108,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getString(R.string.app_name));
 
-        swipeRefreshLayout = (SwipeRefreshLayout) this.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.stockr_blue_800);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -109,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         }
 
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+//        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mCursorAdapter = new QuoteCursorAdapter(this, null);
@@ -124,27 +148,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                         Cursor cursor = getContentResolver().query(
                                 QuoteProvider.Quotes.CONTENT_URI,
-                                null,
+                                QUOTE_DETAILS_COLUMNS,
                                 null,
                                 null,
                                 QuoteColumns._ID + " desc");
 
-                        if(cursor != null && cursor.moveToPosition(position)) {
-                            intent.putExtra(QuoteColumns.SYMBOL, cursor.getString(cursor.getColumnIndex(QuoteColumns.SYMBOL)));
-                            intent.putExtra(QuoteColumns.NAME, cursor.getString(cursor.getColumnIndex(QuoteColumns.NAME)));
-                            intent.putExtra(QuoteColumns.BIDPRICE, cursor.getString(cursor.getColumnIndex(QuoteColumns.BIDPRICE)));
-                            intent.putExtra(QuoteColumns.YEARLOW, cursor.getString(cursor.getColumnIndex(QuoteColumns.YEARLOW)));
-                            intent.putExtra(QuoteColumns.YEARHIGH, cursor.getString(cursor.getColumnIndex(QuoteColumns.YEARHIGH)));
+                        if (cursor != null && cursor.moveToPosition(position)) {
+                            intent.putExtra(QuoteColumns.SYMBOL, cursor.getString(INDEX_SYMBOL));
+                            intent.putExtra(QuoteColumns.NAME, cursor.getString(INDEX_NAME));
+                            intent.putExtra(QuoteColumns.BIDPRICE, cursor.getString(INDEX_BIDPRICE));
+                            intent.putExtra(QuoteColumns.YEARLOW, cursor.getString(INDEX_YEARLOW));
+                            intent.putExtra(QuoteColumns.YEARHIGH, cursor.getString(INDEX_YEARHIGH));
                             startActivity(intent);
                         }
                     }
                 }));
 
 
-
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(recyclerView);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

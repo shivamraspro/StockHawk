@@ -36,6 +36,7 @@
             android:screenOrientation="portrait"
             android:label="@string/details_acitivity_label"
             android:parentActivityName=".ui.MainActivity"/>
+
         <service
             android:name=".service.StockTaskService"
             android:exported="true"
@@ -44,12 +45,29 @@
                 <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
+
         <service android:name=".service.StockIntentService" />
+
         <service android:name=".service.HistoricalDataIntentService" />
+
         <provider
             android:name=".data.generated.QuoteProvider"
             android:authorities="com.example.shivam.stockr.data.QuoteProvider"
-            android:exported="false" />
+            android:exported="true" />
+
+        <receiver android:name=".widget.StockrWidgetProvider"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.shivam.stockr.ACTION_DATA_UPDATED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_stockr"/>
+        </receiver>
+
+        <service android:name=".widget.StockrRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
 
     </application>

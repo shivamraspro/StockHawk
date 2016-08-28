@@ -32,6 +32,8 @@ import okhttp3.Response;
 public class StockTaskService extends GcmTaskService {
     private String LOG_TAG = StockTaskService.class.getSimpleName();
 
+
+
     private OkHttpClient client = new OkHttpClient();
     private Context mContext;
     private StringBuilder mStoredSymbols = new StringBuilder();
@@ -128,8 +130,10 @@ public class StockTaskService extends GcmTaskService {
                         mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
                                 null, null);
                     }
-                        mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                                Utility.quoteJsonToContentVals(getResponse));
+                    mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                            Utility.quoteJsonToContentVals(getResponse));
+
+                    Utility.updateWidgets(mContext);
 
                 } catch (RemoteException | OperationApplicationException e) {
                     Log.e(LOG_TAG, "Error applying batch insert", e);
@@ -150,5 +154,7 @@ public class StockTaskService extends GcmTaskService {
         Response response = client.newCall(request).execute();
         return response.body().string();
     }
+
+
 
 }

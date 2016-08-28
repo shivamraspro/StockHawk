@@ -2,6 +2,7 @@ package com.example.shivam.stockr.rest;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -15,7 +16,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.StringTokenizer;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -23,6 +23,9 @@ import java.util.StringTokenizer;
 public class Utility {
 
     private static String LOG_TAG = Utility.class.getSimpleName();
+
+    public static final String ACTION_DATA_UPDATED =
+            "com.example.shivam.stockr.ACTION_DATA_UPDATED";
 
     public static boolean showPercent = true;
 
@@ -177,17 +180,6 @@ public class Utility {
         return todayDate.toString();
     }
 
-    private static boolean checkSpecialDate(String td) {
-        StringTokenizer stk = new StringTokenizer(td, "-");
-        stk.nextToken();
-        String month = stk.nextToken();
-        String day = stk.nextToken();
-        if (month.equals("02") && day.equals("29")) {
-            return true;
-        }
-        return false;
-    }
-
     public static ArrayList<Double> getHistoricalData(String JSON) {
 
         ArrayList<Double> historicalData = new ArrayList<>();
@@ -213,5 +205,12 @@ public class Utility {
         }
 
         return historicalData;
+    }
+
+    public static void updateWidgets(Context context) {
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 }

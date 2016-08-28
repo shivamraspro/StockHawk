@@ -19,4 +19,6 @@
     <string name="loading_graph_message">Loading...</string>
     <string name="no_internet_message">No Internet Connection</string>
     <string name="open_settings_label">Settings</string>
+    <string name="stockr_database_empty_message">Stocks list is empty.</string>
+    <string name="stockr_add_stocks_message">Add your favourite stocks now.</string>
 </resources>
