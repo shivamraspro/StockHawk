@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -69,7 +70,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     SwipeRefreshLayout swipeRefreshLayout;
 
     @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    public RecyclerView recyclerView;
+
+    @BindView(R.id.empty_recycler_view)
+    public LinearLayout emptyRecyclerView;
 
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
@@ -82,19 +86,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private final static String[] QUOTE_DETAILS_COLUMNS = {
-        QuoteColumns.SYMBOL,
-        QuoteColumns.NAME,
-        QuoteColumns.BIDPRICE,
-        QuoteColumns.YEARLOW,
-        QuoteColumns.YEARHIGH
-    };
-
-    private static final int INDEX_SYMBOL = 0;
-    private static final int INDEX_NAME = 1;
-    private static final int INDEX_BIDPRICE = 2;
-    private static final int INDEX_YEARLOW = 3;
-    private static final int INDEX_YEARHIGH = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+        emptyRecyclerView.setVisibility(View.GONE);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getString(R.string.app_name));
@@ -148,17 +140,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                         Cursor cursor = getContentResolver().query(
                                 QuoteProvider.Quotes.CONTENT_URI,
-                                QUOTE_DETAILS_COLUMNS,
+                                Constants.QUOTE_DETAILS_COLUMNS,
                                 null,
                                 null,
                                 QuoteColumns._ID + " desc");
 
                         if (cursor != null && cursor.moveToPosition(position)) {
-                            intent.putExtra(QuoteColumns.SYMBOL, cursor.getString(INDEX_SYMBOL));
-                            intent.putExtra(QuoteColumns.NAME, cursor.getString(INDEX_NAME));
-                            intent.putExtra(QuoteColumns.BIDPRICE, cursor.getString(INDEX_BIDPRICE));
-                            intent.putExtra(QuoteColumns.YEARLOW, cursor.getString(INDEX_YEARLOW));
-                            intent.putExtra(QuoteColumns.YEARHIGH, cursor.getString(INDEX_YEARHIGH));
+                            intent.putExtra(QuoteColumns.SYMBOL, cursor.getString(Constants.INDEX_DETAILS_SYMBOL));
+                            intent.putExtra(QuoteColumns.NAME, cursor.getString(Constants.INDEX_DETAILS_NAME));
+                            intent.putExtra(QuoteColumns.BIDPRICE, cursor.getString(Constants.INDEX_DETAILS_BIDPRICE));
+                            intent.putExtra(QuoteColumns.YEARLOW, cursor.getString(Constants.INDEX_DETAILS_YEARLOW));
+                            intent.putExtra(QuoteColumns.YEARHIGH, cursor.getString(Constants.INDEX_DETAILS_YEARHIGH));
                             startActivity(intent);
                         }
                     }
@@ -285,8 +277,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This narrows the return to only the stocks that are most current.
         return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
-                new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
+                Constants.QUOTE_MAIN_COLUMNS,
                 QuoteColumns.ISCURRENT + " = ?",
                 new String[]{"1"},
                 QuoteColumns._ID + " desc");
@@ -296,6 +287,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
         mCursor = data;
+
+        if (data == null) {
+            recyclerView.setVisibility(View.GONE);
+            emptyRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyRecyclerView.setVisibility(View.GONE);
+        }
+
         EventBus.getDefault().post(new LoadingEvent(false));
     }
 

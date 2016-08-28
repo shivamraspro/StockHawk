@@ -70,11 +70,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-//        loading_spinner.setVisibility(View.GONE);
-//        graph.setVisibility(View.GONE);
-//        noInternetView.setVisibility(View.GONE);
-
-
         Intent intent = getIntent();
 
         tv_stockName.setText(intent.getStringExtra(QuoteColumns.NAME));

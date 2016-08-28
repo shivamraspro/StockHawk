@@ -9,27 +9,14 @@ import android.widget.RemoteViewsService;
 import com.example.shivam.stockr.R;
 import com.example.shivam.stockr.data.QuoteColumns;
 import com.example.shivam.stockr.data.QuoteProvider;
+import com.example.shivam.stockr.rest.Constants;
 
 /**
  * Created by shivam on 27/08/16.
  */
 public class StockrRemoteViewsService extends RemoteViewsService {
 
-    private static final String[] QUOTE_COLUMNS = {
-            QuoteColumns.SYMBOL,
-            QuoteColumns.BIDPRICE,
-            QuoteColumns.PERCENT_CHANGE,
-            QuoteColumns.YEARLOW,
-            QuoteColumns.YEARHIGH,
-            QuoteColumns.NAME
-    };
 
-    static final int INDEX_SYMBOL = 0;
-    static final int INDEX_BIDPRICE = 1;
-    static final int INDEX_PERCENT_CHANGE = 2;
-    static final int INDEX_YEARLOW = 3;
-    static final int INDEX_YEARHIGH = 4;
-    static final int INDEX_NAME = 5;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(final Intent intent) {
@@ -57,7 +44,7 @@ public class StockrRemoteViewsService extends RemoteViewsService {
 
                 cursor = getContentResolver().query(
                         QuoteProvider.Quotes.CONTENT_URI,
-                        QUOTE_COLUMNS,
+                        Constants.QUOTE_COLUMNS,
                         null,
                         null,
                         QuoteColumns._ID + " desc"
@@ -87,12 +74,12 @@ public class StockrRemoteViewsService extends RemoteViewsService {
 
                 RemoteViews views = new RemoteViews(getPackageName(), R.layout.list_item_quote);
 
-                String stockSymbol = cursor.getString(INDEX_SYMBOL);
-                String bidPrice = cursor.getString(INDEX_BIDPRICE);
-                String percentChange = cursor.getString(INDEX_PERCENT_CHANGE);
-                String yearLow = cursor.getString(INDEX_YEARLOW);
-                String yearHigh = cursor.getString(INDEX_YEARHIGH);
-                String stockName = cursor.getString(INDEX_NAME);
+                String stockSymbol = cursor.getString(Constants.INDEX_REMOTE_SYMBOL);
+                String bidPrice = cursor.getString(Constants.INDEX_REMOTE_BIDPRICE);
+                String percentChange = cursor.getString(Constants.INDEX_REMOTE_PERCENT_CHANGE);
+                String yearLow = cursor.getString(Constants.INDEX_REMOTE_YEARLOW);
+                String yearHigh = cursor.getString(Constants.INDEX_REMOTE_YEARHIGH);
+                String stockName = cursor.getString(Constants.INDEX_REMOTE_NAME);
 
                 views.setTextViewText(R.id.stock_symbol, stockSymbol);
                 views.setTextViewText(R.id.bid_price, bidPrice);

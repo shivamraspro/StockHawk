@@ -33,6 +33,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+
+        <include layout="@layout/empty_stockrdatabase_view"
+            android:id="@+id/empty_recycler_view"/>
+
     </android.support.v4.widget.SwipeRefreshLayout>
 
 
