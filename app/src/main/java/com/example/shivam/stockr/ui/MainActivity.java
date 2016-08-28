@@ -21,7 +21,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -70,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     SwipeRefreshLayout swipeRefreshLayout;
 
     @BindView(R.id.recycler_view)
-    public RecyclerView recyclerView;
+    RecyclerView recyclerView;
 
     @BindView(R.id.empty_recycler_view)
-    public LinearLayout emptyRecyclerView;
+    View emptyRecyclerView;
 
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
@@ -287,14 +286,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
         mCursor = data;
-
-        if (data == null) {
-            recyclerView.setVisibility(View.GONE);
-            emptyRecyclerView.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyRecyclerView.setVisibility(View.GONE);
-        }
 
         EventBus.getDefault().post(new LoadingEvent(false));
     }

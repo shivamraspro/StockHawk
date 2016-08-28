@@ -68,7 +68,8 @@ public class Constants {
             QuoteColumns.PERCENT_CHANGE,
             QuoteColumns.YEARLOW,
             QuoteColumns.YEARHIGH,
-            QuoteColumns.NAME
+            QuoteColumns.NAME,
+            QuoteColumns.ISUP
     };
 
     public static final int INDEX_REMOTE_SYMBOL = 0;
@@ -77,4 +78,5 @@ public class Constants {
     public static final int INDEX_REMOTE_YEARLOW = 3;
     public static final int INDEX_REMOTE_YEARHIGH = 4;
     public static final int INDEX_REMOTE_NAME = 5;
+    public static final int INDEX_REMOTE_ISUP = 6;
 }
