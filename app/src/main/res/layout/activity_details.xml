@@ -52,7 +52,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
+                android:padding="@dimen/textview_padding"
                 android:textColor="@color/stockr_grey_500"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:text="@string/no_internet_message" />
@@ -63,7 +63,7 @@
                 android:onClick="retryLoadingGraph"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:layout_height="wrap_content"
-                android:text="Retry"
+                android:text="@string/retry_button"
                 android:textAllCaps="true"/>
 
         </LinearLayout>

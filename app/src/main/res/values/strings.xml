@@ -1,27 +1,39 @@
 <resources>
-    <string name="app_name">STOCKr</string>
+    <string name="app_name" translatable="false">STOCKr</string>
+    <string name="details_acitivity_label">Details</string>
 
+
+
+    <!--Names of buttons in settings/toolbar-->
     <string name="action_change_units">Change Units</string>
     <string name="action_refresh">Refresh</string>
 
+    <!--Labels used in dialog box-->
     <string name="symbol_search">Add new Stock</string>
     <string name="content_test">Search for a Stock Symbol</string>
-    <string name="input_hint">FB/TSLA/AMZN/EBAY</string>
-
     <string name="input_prefill"></string>
-    <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+    <string name="input_hint" translatable="false">FB/TSLA/AMZN/EBAY</string>
 
-    <string name="details_acitivity_label">Details</string>
-    <string name="action_spinner">Period</string>
+
+    <!--Fields in the stocks details pane-->
     <string name="details_current_price_label">Current Price</string>
     <string name="details_year_low_label">Year Low</string>
     <string name="details_year_high_label">Year High</string>
-    <string name="loading_graph_message">Loading...</string>
+
+    <!-- Various snackbar/toast messages for main activity-->
     <string name="no_internet_message">No Internet Connection</string>
-    <string name="open_settings_label">Settings</string>
+    <string name="duplicate_stock">This stock is already saved!</string>
+    <string name="invalid_stock">Invalid Stock Symbol! Try Again.</string>
+
+    <!--Message shown in case of no stock in database-->
     <string name="stockr_database_empty_message">Stocks list is empty.</string>
     <string name="stockr_add_stocks_message">Add your favourite stocks now.</string>
-    <string name="duplicate_stock">This stock is already saved!</string>
+
+    <!--Extra strings-->
+    <string name="open_settings_label">Settings</string>
     <string name="graph_description">ONE YEAR RECORD</string>
-    <string name="invalid_stock">Invalid Stock Symbol! Try Again.</string>
+    <string name="retry_button">Retry</string>
+
+    <!--Content description-->
+    <string name="fab_description">Add new Stocks button</string>
 </resources>

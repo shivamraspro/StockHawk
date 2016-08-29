@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     android:background="@color/stockr_blue_800"
     android:columnCount="2"
-    android:paddingLeft="32dp"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
-    android:paddingRight="32dp"
+    android:paddingLeft="@dimen/empty_view_vertical_margin"
+    android:paddingTop="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/empty_view_vertical_margin"
+    android:paddingEnd="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/empty_view_vertical_margin"
     android:rowCount="4">
 
     <TextView

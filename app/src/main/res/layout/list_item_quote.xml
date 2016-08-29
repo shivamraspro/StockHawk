@@ -9,32 +9,35 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="@dimen/listitem_height"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingStart="@dimen/activity_vertical_margin"
+        android:paddingEnd="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_vertical_margin">
 
         <TextView
             android:id="@+id/stock_symbol"
             style="@style/StockSymbolTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left|center_vertical"
+            android:gravity="left|center_vertical|start"
             tools:text="GOOG" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="right">
+            android:gravity="right|end">
 
             <TextView
                 android:id="@+id/bid_price"
                 style="@style/BidPriceTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="10sp"
+                android:paddingRight="@dimen/stockprice_padding"
+                android:paddingEnd="@dimen/stockprice_padding"
                 tools:text="1000.00" />
 
             <TextView
@@ -43,8 +46,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/percent_change_pill"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
+                android:paddingLeft="@dimen/change_view_padding"
+                android:paddingRight="@dimen/change_view_padding"
+                android:paddingStart="@dimen/change_view_padding"
+                android:paddingEnd="@dimen/change_view_padding"
                 tools:text="100%" />
         </LinearLayout>
     </LinearLayout>

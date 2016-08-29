@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name" translatable="false">STOCKr</string>
+    <string name="details_acitivity_label">تفاصيل</string>
+
+
+
+    <!--Names of buttons in settings/toolbar-->
+    <string name="action_change_units">وحدات التغيير</string>
+    <string name="action_refresh">اعادة تنشيط</string>
+
+    <!--Labels used in dialog box-->
+    <string name="symbol_search">إضافة أسهم جديدة</string>
+    <string name="content_test">بحث عن الأوراق المالية رمز</string>
+    <string name="input_prefill"></string>
+    <string name="input_hint" translatable="false">FB/TSLA/AMZN/EBAY</string>
+
+
+    <!--Fields in the stocks details pane-->
+    <string name="details_current_price_label">السعر الحالي</string>
+    <string name="details_year_low_label">العام منخفضة</string>
+    <string name="details_year_high_label">السنة السامي</string>
+
+    <!-- Various snackbar/toast messages for main activity-->
+    <string name="no_internet_message">لا يوجد اتصال بالانترنت</string>
+    <string name="duplicate_stock">يتم حفظ هذه الأسهم بالفعل!</string>
+    <string name="invalid_stock">رمز اسهم غير صالح! حاول ثانية.</string>
+
+    <!--Message shown in case of no stock in database-->
+    <string name="stockr_database_empty_message">قائمة الاسهم فارغة.</string>
+    <string name="stockr_add_stocks_message">إضافة الأسهم المفضلة لديك الآن.</string>
+
+    <!--Extra strings-->
+    <string name="open_settings_label">إعدادات</string>
+    <string name="graph_description">بيانات سنة واحدة</string>
+    <string name="retry_button">إعادة المحاولة</string>
+
+    <!--Content description-->
+    <string name="fab_description">إضافة زر أسهم جديدة</string>
+</resources>
