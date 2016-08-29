@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
+    //clean code for submission
 
     @BindView(R.id.recycler_view_container)
     CoordinatorLayout recyclerViewContainer;
