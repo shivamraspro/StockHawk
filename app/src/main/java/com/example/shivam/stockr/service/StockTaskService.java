@@ -1,5 +1,6 @@
 package com.example.shivam.stockr.service;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
@@ -12,13 +13,17 @@ import com.example.shivam.stockr.data.QuoteColumns;
 import com.example.shivam.stockr.data.QuoteProvider;
 import com.example.shivam.stockr.rest.Constants;
 import com.example.shivam.stockr.rest.Utility;
+import com.example.shivam.stockr.ui.MainActivity;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -72,7 +77,7 @@ public class StockTaskService extends GcmTaskService {
                 // Init task. Populates DB with quotes for the symbols seen below
                 try {
                     urlStringBuilder.append(
-                            URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
+                            URLEncoder.encode("\"MSFT\",\"YHOO\",\"AAPL\",\"GOOG\")", "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -130,8 +135,14 @@ public class StockTaskService extends GcmTaskService {
                         mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
                                 null, null);
                     }
-                    mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                            Utility.quoteJsonToContentVals(getResponse));
+
+                    ArrayList<ContentProviderOperation> batchOperations = Utility.quoteJsonToContentVals(getResponse);
+
+                    if(batchOperations != null)
+                        mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                            batchOperations);
+                    else
+                        EventBus.getDefault().post(new MainActivity.InvalidStockAddedEvent(true));
 
                     Utility.updateWidgets(mContext);
 

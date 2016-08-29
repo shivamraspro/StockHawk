@@ -41,7 +41,11 @@ public class Utility {
                 if (count == 1) {
                     jsonObject = jsonObject.getJSONObject("results")
                             .getJSONObject("quote");
-                    batchOperations.add(buildBatchOperation(jsonObject));
+                    ContentProviderOperation cpo = buildBatchOperation(jsonObject);
+                    if(cpo == null)
+                        return null;
+                    else
+                        batchOperations.add(cpo);
                 } else {
                     resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
 
@@ -91,22 +95,26 @@ public class Utility {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI);
         try {
-            String change = jsonObject.getString(Constants.QUOTE_CHANGE);
-            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString(Constants.QUOTE_SYMBOL));
-            builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString(Constants.QUOTE_BID_PRICE)));
-            builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
-                    jsonObject.getString(Constants.QUOTE_PERCENT_CHANGE), true));
-            builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
-            builder.withValue(QuoteColumns.NAME, jsonObject.getString(Constants.QUOTE_NAME));
-            builder.withValue(QuoteColumns.YEARHIGH, jsonObject.getString(Constants.QUOTE_YEARHIGH));
-            builder.withValue(QuoteColumns.YEARLOW, jsonObject.getString(Constants.QUOTE_YEARLOW));
-            builder.withValue(QuoteColumns.ISCURRENT, 1);
-            if (change.charAt(0) == '-') {
-                builder.withValue(QuoteColumns.ISUP, 0);
-            } else {
-                builder.withValue(QuoteColumns.ISUP, 1);
+            if(jsonObject.getString(Constants.QUOTE_NAME).equals("null")) {
+                return null;
             }
-
+            else {
+                String change = jsonObject.getString(Constants.QUOTE_CHANGE);
+                builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString(Constants.QUOTE_SYMBOL));
+                builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString(Constants.QUOTE_BID_PRICE)));
+                builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
+                        jsonObject.getString(Constants.QUOTE_PERCENT_CHANGE), true));
+                builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
+                builder.withValue(QuoteColumns.NAME, jsonObject.getString(Constants.QUOTE_NAME));
+                builder.withValue(QuoteColumns.YEARHIGH, jsonObject.getString(Constants.QUOTE_YEARHIGH));
+                builder.withValue(QuoteColumns.YEARLOW, jsonObject.getString(Constants.QUOTE_YEARLOW));
+                builder.withValue(QuoteColumns.ISCURRENT, 1);
+                if (change.charAt(0) == '-') {
+                    builder.withValue(QuoteColumns.ISUP, 0);
+                } else {
+                    builder.withValue(QuoteColumns.ISUP, 1);
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

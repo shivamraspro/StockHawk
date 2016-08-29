@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                             new String[]{input.toString().toUpperCase()}, null);
                                     if (c.getCount() != 0) {
                                         Toast toast =
-                                                Toast.makeText(MainActivity.this, "This stock is already saved!",
+                                                Toast.makeText(MainActivity.this, getString(R.string.duplicate_stock),
                                                         Toast.LENGTH_LONG);
                                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                                         toast.show();
@@ -247,10 +247,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         snackbar.show();
     }
 
-    private void duplicateStockSnackBar() {
-        Snackbar snackbar = Snackbar
-                .make(recyclerViewContainer, getString(R.string.duplicate_stock), Snackbar.LENGTH_LONG);
-        snackbar.show();
+    private void invalidStockSnackBar() {
+
     }
 
     @Override
@@ -371,18 +369,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         swipeRefreshLayout.setRefreshing(loadingEvent.loading);
     }
 
-    public static class RecyclerViewEmptyEvent {
-        public final boolean recyclerViewEmpty;
+    public static class InvalidStockAddedEvent {
+        public final boolean invalidStockAdded;
 
-        public RecyclerViewEmptyEvent(boolean recyclerViewEmpty) {
-            this.recyclerViewEmpty = recyclerViewEmpty;
+        public InvalidStockAddedEvent(boolean invalidStockAdded) {
+            this.invalidStockAdded = invalidStockAdded;
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void changeView(RecyclerViewEmptyEvent rvee) {
-//        recyclerView.setVisibility(rvee.recyclerViewEmpty ? View.GONE : View.VISIBLE);
-//        emptyRecyclerView.setVisibility(rvee.recyclerViewEmpty ? View.VISIBLE : View.GONE);
+    public void displayInvalidToast(InvalidStockAddedEvent isae) {
+        if(isae.invalidStockAdded) {
+            Toast toast =
+                    Toast.makeText(MainActivity.this, getString(R.string.invalid_stock),
+                            Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+            toast.show();
+        }
     }
 
     private void refreshStocksList() {
