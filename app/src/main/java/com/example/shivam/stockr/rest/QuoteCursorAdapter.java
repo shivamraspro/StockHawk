@@ -88,26 +88,6 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     }
 
     @Override
-    public boolean onItemMove(int fromPosition, int toPosition) {
-
-
-        //write code to move todo
-
-//        if (fromPosition < toPosition) {
-//            for (int i = fromPosition; i < toPosition; i++) {
-//                Collections.swap(mItems, i, i + 1);
-//            }
-//        } else {
-//            for (int i = fromPosition; i > toPosition; i--) {
-//                Collections.swap(mItems, i, i - 1);
-//            }
-//        }
-
-        notifyItemMoved(fromPosition, toPosition);
-        return true;
-    }
-
-    @Override
     public int getItemCount() {
         return super.getItemCount();
     }
