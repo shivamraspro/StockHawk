@@ -21,4 +21,6 @@
     <string name="open_settings_label">Settings</string>
     <string name="stockr_database_empty_message">Stocks list is empty.</string>
     <string name="stockr_add_stocks_message">Add your favourite stocks now.</string>
+    <string name="duplicate_stock">This stock is already saved!</string>
+    <string name="graph_description">ONE YEAR RECORD</string>
 </resources>

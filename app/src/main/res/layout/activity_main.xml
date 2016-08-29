@@ -25,17 +25,23 @@
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
+            <com.example.shivam.stockr.rest.RecyclerViewEmptyViewSupport
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-        <include layout="@layout/empty_stockrdatabase_view"
-            android:id="@+id/empty_recycler_view"/>
+            <include
+                android:id="@+id/empty_recycler_view"
+                layout="@layout/empty_stockrdatabase_view" />
+
+        </FrameLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -47,9 +53,9 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_white_24dp"
+        app:layout_behavior="com.example.shivam.stockr.rest.FloatingActionButtonBehavior"
         fab:fab_colorNormal="@color/stockr_blue_800"
         fab:fab_colorPressed="@color/stockr_blue_900"
-        app:layout_behavior="com.example.shivam.stockr.rest.FloatingActionButtonBehavior"
         fab:fab_colorRipple="@color/stockr_blue_900"
         fab:fab_shadow="true"
         fab:fab_type="normal" />

@@ -79,6 +79,8 @@ public class StockrRemoteViewsService extends RemoteViewsService {
                 else
                     views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
 
+
+
                 String stockSymbol = cursor.getString(Constants.INDEX_REMOTE_SYMBOL);
                 String bidPrice = cursor.getString(Constants.INDEX_REMOTE_BIDPRICE);
                 String percentChange = cursor.getString(Constants.INDEX_REMOTE_PERCENT_CHANGE);

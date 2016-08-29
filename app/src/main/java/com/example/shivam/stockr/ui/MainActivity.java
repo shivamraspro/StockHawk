@@ -12,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
@@ -29,6 +28,7 @@ import com.example.shivam.stockr.data.QuoteColumns;
 import com.example.shivam.stockr.data.QuoteProvider;
 import com.example.shivam.stockr.rest.Constants;
 import com.example.shivam.stockr.rest.QuoteCursorAdapter;
+import com.example.shivam.stockr.rest.RecyclerViewEmptyViewSupport;
 import com.example.shivam.stockr.rest.RecyclerViewItemClickListener;
 import com.example.shivam.stockr.rest.RecyclerViewItemDecorator;
 import com.example.shivam.stockr.rest.Utility;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     SwipeRefreshLayout swipeRefreshLayout;
 
     @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    RecyclerViewEmptyViewSupport recyclerView;
 
     @BindView(R.id.empty_recycler_view)
     View emptyRecyclerView;
@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startService(mServiceIntent);
             } else {
                 networkSnackBar();
+
             }
         }
 
@@ -204,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mItemTouchHelper.attachToRecyclerView(recyclerView);
         recyclerView.addItemDecoration(new RecyclerViewItemDecorator(this, R.drawable.divider));
 
+        recyclerView.setEmptyView(emptyRecyclerView);
+
         startPeriodicTask();
 
         setupStetho();
@@ -241,6 +244,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                     }
                 });
+        snackbar.show();
+    }
+
+    private void duplicateStockSnackBar() {
+        Snackbar snackbar = Snackbar
+                .make(recyclerViewContainer, getString(R.string.duplicate_stock), Snackbar.LENGTH_LONG);
         snackbar.show();
     }
 
@@ -360,6 +369,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void stopLoading(LoadingEvent loadingEvent) {
         swipeRefreshLayout.setRefreshing(loadingEvent.loading);
+    }
+
+    public static class RecyclerViewEmptyEvent {
+        public final boolean recyclerViewEmpty;
+
+        public RecyclerViewEmptyEvent(boolean recyclerViewEmpty) {
+            this.recyclerViewEmpty = recyclerViewEmpty;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void changeView(RecyclerViewEmptyEvent rvee) {
+//        recyclerView.setVisibility(rvee.recyclerViewEmpty ? View.GONE : View.VISIBLE);
+//        emptyRecyclerView.setVisibility(rvee.recyclerViewEmpty ? View.VISIBLE : View.GONE);
     }
 
     private void refreshStocksList() {

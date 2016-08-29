@@ -1,6 +1,7 @@
 package com.example.shivam.stockr.ui;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -73,9 +74,16 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         tv_stockName.setText(intent.getStringExtra(QuoteColumns.NAME));
+        tv_stockName.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Medium.ttf"));
+
         tv_stockPrice.setText("$" + intent.getStringExtra(QuoteColumns.BIDPRICE));
+        tv_stockPrice.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Regular.ttf"));
+
         tv_stockYearLow.setText("$" + intent.getStringExtra(QuoteColumns.YEARLOW));
+        tv_stockYearLow.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Regular.ttf"));
+
         tv_stockYearHigh.setText("$" + intent.getStringExtra(QuoteColumns.YEARHIGH));
+        tv_stockYearHigh.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Regular.ttf"));
 
 
         if(Utility.isNetworkAvailable(this)) {
@@ -116,10 +124,24 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         LineDataSet dataSet = new LineDataSet(entries, "Label");
-        dataSet.setColor(R.color.stockr_accent_light_blue_100);
+        dataSet.setDrawCircles(false);
 
         LineData data = new LineData(dataSet);
+        data.setValueTextSize(6f);
+        data.setValueTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Medium.ttf"));
+        data.setValueTextColor(R.color.stockr_blue_800);
+
         graph.setData(data);
+
+        //interaction with the chart
+        graph.setPinchZoom(true);
+
+        //general chart styling
+        graph.setDescription(getString(R.string.graph_description));
+        graph.setDescriptionTextSize(11f);
+        graph.setDescriptionTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Medium.ttf"));
+        graph.setGridBackgroundColor(R.color.stockr_grey_300);
+
         graph.invalidate();
 
         loading_spinner.setVisibility(View.GONE);

@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- State when a row is being pressed, but hasn't yet been activated (finger down) -->
     <item android:state_pressed="true">
-        <ripple android:color="@color/stockr_grey_500" />
+        <ripple android:color="@color/stockr_grey_300" />
     </item>
 
     <!-- Default, "just hangin' out" state. -->

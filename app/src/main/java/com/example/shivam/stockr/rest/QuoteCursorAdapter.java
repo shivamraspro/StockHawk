@@ -28,6 +28,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
     private static Context mContext;
     private static Typeface robotoLight;
+    private static Typeface robotoRegular;
+    private static Typeface robotoMedium;
 
     public QuoteCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
@@ -36,7 +38,9 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        robotoRegular = Typeface.createFromAsset(mContext.getAssets(), "fonts/Roboto-Regular.ttf");
         robotoLight = Typeface.createFromAsset(mContext.getAssets(), "fonts/Roboto-Light.ttf");
+        robotoMedium = Typeface.createFromAsset(mContext.getAssets(), "fonts/Roboto-Medium.ttf");
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_quote, parent, false);
         ViewHolder vh = new ViewHolder(itemView);
@@ -45,31 +49,32 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
-        viewHolder.symbol.setText(cursor.getString(Constants.INDEX_MAIN_SYMBOL));
-        viewHolder.bidPrice.setText(cursor.getString(Constants.INDEX_MAIN_BIDPRICE));
-        int sdk = Build.VERSION.SDK_INT;
-        if (cursor.getInt(Constants.INDEX_MAIN_ISUP) == 1) {
-            if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
-                viewHolder.change.setBackgroundDrawable(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+
+            viewHolder.symbol.setText(cursor.getString(Constants.INDEX_MAIN_SYMBOL));
+            viewHolder.bidPrice.setText(cursor.getString(Constants.INDEX_MAIN_BIDPRICE));
+            int sdk = Build.VERSION.SDK_INT;
+            if (cursor.getInt(Constants.INDEX_MAIN_ISUP) == 1) {
+                if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
+                    viewHolder.change.setBackgroundDrawable(
+                            mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+                } else {
+                    viewHolder.change.setBackground(
+                            mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+                }
             } else {
-                viewHolder.change.setBackground(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+                if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
+                    viewHolder.change.setBackgroundDrawable(
+                            mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+                } else {
+                    viewHolder.change.setBackground(
+                            mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+                }
             }
-        } else {
-            if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
-                viewHolder.change.setBackgroundDrawable(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+            if (Utility.showPercent) {
+                viewHolder.change.setText(cursor.getString(Constants.INDEX_MAIN_PERCENT_CHANGE));
             } else {
-                viewHolder.change.setBackground(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+                viewHolder.change.setText(cursor.getString(Constants.INDEX_MAIN_CHANGE));
             }
-        }
-        if (Utility.showPercent) {
-            viewHolder.change.setText(cursor.getString(Constants.INDEX_MAIN_PERCENT_CHANGE));
-        } else {
-            viewHolder.change.setText(cursor.getString(Constants.INDEX_MAIN_CHANGE));
-        }
     }
 
     @Override
@@ -80,7 +85,6 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         mContext.getContentResolver().delete(QuoteProvider.Quotes.withSymbol(symbol), null, null);
         notifyItemRemoved(position);
         Utility.updateWidgets(mContext);
-
     }
 
     @Override
@@ -117,9 +121,11 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         public ViewHolder(View itemView) {
             super(itemView);
             symbol = (TextView) itemView.findViewById(R.id.stock_symbol);
-            symbol.setTypeface(robotoLight);
+            symbol.setTypeface(robotoRegular);
             bidPrice = (TextView) itemView.findViewById(R.id.bid_price);
+            bidPrice.setTypeface(robotoRegular);
             change = (TextView) itemView.findViewById(R.id.change);
+            change.setTypeface(robotoMedium);
         }
 
         @Override
