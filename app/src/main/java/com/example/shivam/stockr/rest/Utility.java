@@ -9,11 +9,15 @@ import android.util.Log;
 
 import com.example.shivam.stockr.data.QuoteColumns;
 import com.example.shivam.stockr.data.QuoteProvider;
+import com.github.mikephil.charting.data.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -188,9 +192,9 @@ public class Utility {
         return todayDate.toString();
     }
 
-    public static ArrayList<Double> getHistoricalData(String JSON) {
+    public static GraphData getHistoricalData(String JSON) {
 
-        ArrayList<Double> historicalData = new ArrayList<>();
+        GraphData historicalData = new GraphData();
 
         JSONObject jsonObject = null;
         JSONArray jsonArray = null;
@@ -202,14 +206,27 @@ public class Utility {
                 jsonArray = jsonObject.getJSONArray("quote");
 
                 if (jsonArray != null && jsonArray.length() != 0) {
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
-                        historicalData.add(jsonArray.getJSONObject(i).getDouble(Constants.QUOTE_DAY_CLOSING_PRICE));
+                    for (int i = jsonArray.length() - 1, j = 1; i >= 0; i--, j++) {
+                        historicalData.graphDataEntries.add(new Entry(j ,(float) jsonArray.
+                                getJSONObject(i).
+                                getDouble(Constants.QUOTE_DAY_CLOSING_PRICE)));
+
+                        DateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        DateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy");
+                        String formattedDate = targetFormat.format(originalFormat.parse(jsonArray.
+                                getJSONObject(i).
+                                getString(Constants.QUOTE_DAY_DATE)));
+
+
+                        historicalData.dates.add(formattedDate);
                     }
                 }
 
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "String to JSON to Arraylist failed: " + e);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         return historicalData;

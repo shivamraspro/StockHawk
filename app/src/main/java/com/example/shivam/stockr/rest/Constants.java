@@ -24,7 +24,10 @@ public class Constants {
     public final static String QUOTE_YEARLOW = "YearLow";
     public final static String QUOTE_YEARHIGH = "YearHigh";
 
+
+    //For historical data
     public final static String QUOTE_DAY_CLOSING_PRICE = "Close";
+    public final static String QUOTE_DAY_DATE = "Date";
 
 
     //columns for DetailsActivity

@@ -13,18 +13,20 @@ import android.widget.TextView;
 
 import com.example.shivam.stockr.R;
 import com.example.shivam.stockr.data.QuoteColumns;
+import com.example.shivam.stockr.rest.GraphData;
 import com.example.shivam.stockr.rest.Utility;
 import com.example.shivam.stockr.service.HistoricalDataIntentService;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -107,29 +109,31 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public static class GraphDataReadyEvent {
-        ArrayList<Double> graphData;
+        GraphData graphData;
 
-        public GraphDataReadyEvent(ArrayList<Double> graphData) {
+        public GraphDataReadyEvent(GraphData graphData) {
             this.graphData = graphData;
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGraphDataReady(GraphDataReadyEvent gdre) {
+    public void onGraphDataReady(final GraphDataReadyEvent gdre) {
 
-        ArrayList<Entry> entries = new ArrayList<>();
-
-        for(int i = 0; i < gdre.graphData.size(); i++) {
-            entries.add(new Entry(i+1, gdre.graphData.get(i).floatValue()));
-        }
-
-        LineDataSet dataSet = new LineDataSet(entries, "Label");
+        LineDataSet dataSet = new LineDataSet(gdre.graphData.graphDataEntries , "");
         dataSet.setDrawCircles(false);
+        dataSet.setColor(getResources().getColor(R.color.stockr_blue_800));
+
 
         LineData data = new LineData(dataSet);
-        data.setValueTextSize(6f);
+        data.setValueTextSize(8f);
         data.setValueTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Medium.ttf"));
-        data.setValueTextColor(R.color.stockr_blue_800);
+        data.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return "$" + value + ",  " + gdre.graphData.dates.get(dataSetIndex);
+            }
+        });
+
 
         graph.setData(data);
 
@@ -140,7 +144,9 @@ public class DetailsActivity extends AppCompatActivity {
         graph.setDescription(getString(R.string.graph_description));
         graph.setDescriptionTextSize(11f);
         graph.setDescriptionTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Medium.ttf"));
-        graph.setGridBackgroundColor(R.color.stockr_grey_300);
+
+        XAxis xAxis = graph.getXAxis();
+        xAxis.setDrawLabels(false);
 
         graph.invalidate();
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import com.example.shivam.stockr.data.QuoteColumns;
 import com.example.shivam.stockr.rest.Constants;
+import com.example.shivam.stockr.rest.GraphData;
 import com.example.shivam.stockr.rest.Utility;
 import com.example.shivam.stockr.ui.DetailsActivity;
 
@@ -13,7 +14,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -70,7 +70,7 @@ public class HistoricalDataIntentService extends IntentService {
             try {
                 getResponse = fetchData(urlString);
 
-                ArrayList<Double> graphData = Utility.getHistoricalData(getResponse);
+                GraphData graphData = Utility.getHistoricalData(getResponse);
 
                EventBus.getDefault().post(new DetailsActivity.GraphDataReadyEvent(graphData));
             } catch (IOException e) {
